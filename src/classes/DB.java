@@ -1,7 +1,9 @@
 package classes;
 
 import gameobject.*;
+import model.Highscore;
 import model.Player;
+import model.Score;
 import model.User;
 
 import java.io.BufferedReader;
@@ -20,7 +22,8 @@ public class DB {
         return ourInstance;
     }
     public ArrayList<User> alUser = new ArrayList<User>();
-    public String map[][] = new String[19][58];
+    public String map[][] = new String[17][56];
+    public Highscore hs = new Highscore();
     private DB() {
         try{
             FileInputStream fstream = new FileInputStream("users.csv");
@@ -38,22 +41,46 @@ public class DB {
             line = null;
             int i = 0;
             while((line = mapreader.readLine())!=null){
-                map[i++] = line.split(",");
+                map[i] = line.split(",");
+                i++;
             }
+            FileInputStream hstream = new FileInputStream("highscore.csv");
+            BufferedReader hreader = new BufferedReader(new InputStreamReader(hstream));
+            line = null;
+            i = 0;
+            while((line = hreader.readLine())!=null){
+                String tokens[] = line.split(",");
+                Score s = new Score(tokens[0], Integer.parseInt(tokens[1]));
+                hs.scores.add(s);
+            }
+            sortHS();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
-    public Player fetchEnemy(){
+    public void sortHS() {
+		// TODO Auto-generated method stub
+    	for(int i=0;i<hs.scores.size();i++){
+        	for(int j=hs.scores.size()-1;j>0;j--){
+        		Score temp;
+        		if(hs.scores.get(j).score>hs.scores.get(j-1).score){
+        			temp = hs.scores.get(j);
+        			hs.scores.set(j, hs.scores.get(j-1));
+        			hs.scores.set(j-1, temp);
+        		}
+        	}
+        }
+	}
+	public Player fetchEnemy(){
         Random rand = new Random();
-        switch(rand.nextInt(20)){
-            case 3:
+        switch(rand.nextInt(31)){
+            case 30:
                 return new Bulbasaur();
             case 5:
                 return new Charmender();
-            case 6:
+            case 26:
                 return new Squirtle();
-            case 9:
+            case 19:
                 return null;
         }
         return null;
